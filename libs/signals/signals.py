@@ -6,6 +6,12 @@ import numpy as np
 # returns a dataframe with 'close', 'fast_ewma', 'slow_ewma', 'ewma_diff', and 'signal'
 def ewma_crossover(data, period_fast=9, period_slow=13):
 
+    ''' 
+    Exponential Weighted Moving Average Crossover Indicator
+    takes in a dataframe with columns 'Close' and a datetime as the index
+    returns a dataframe with 'close', 'fast_ewma', 'slow_ewma', 'ewma_diff', and 'signal'
+    '''
+
     # build out an exponential moving average crossover signal generator
     # standard is to use windows of 9 and 13 for fast and slow, respectively
     
