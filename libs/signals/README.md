@@ -1,5 +1,5 @@
 # Signal Generator Library
-### A libraray of technical trading signals.
+### A library of technical trading signals.
 
 ## Table of Contents
 * [Bollinger Bands](#Bollinger-Bands)

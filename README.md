@@ -1,5 +1,5 @@
 # Crypto_Bandyts
-## Crypto trading algorithm
+Crypto trading algorithm
 
 ![](images/crypto_image.jpg "Source: https://www.telegraph.co.uk/technology/digital-money/how-to-understand-cryptocurrency-terminology/")  
 <sup><sup>Credit: Getty Images</sup></sup>
