@@ -14,7 +14,7 @@ Crypto trading algorithm
 
 ## Table of Contents
 * [Libraries](#Libraries)
-* [Scratch Notebooks](notebooks)
+* [Scratch Notebooks](libs/notebooks)
 * [Resources](#Resources)
 * ...
 
