@@ -1,2 +1,2 @@
 # Crypto_Bandyts
-Crytpo trading algorithim
+Crypto trading algorithim
