@@ -1,15 +1,14 @@
 import pandas as pd
 import numpy as np
 
-# Exponential Weighted Moving Average Crossover Indicator
-# takes in a dataframe with columns 'Close' and a datetime as the index
-# returns a dataframe with 'close', 'fast_ewma', 'slow_ewma', 'ewma_diff', and 'signal'
 def ewma_crossover(data, period_fast=9, period_slow=13):
 
     ''' 
-    Exponential Weighted Moving Average Crossover Indicator
-    takes in a dataframe with columns 'Close' and a datetime as the index
-    returns a dataframe with 'close', 'fast_ewma', 'slow_ewma', 'ewma_diff', and 'signal'
+    'Exponential Weighted Moving Average Crossover Indicator'
+    -Takes in a dataframe with at least with one column 'Close' and a datetime as the index
+        *Optionally, takes the faster moving average window size ("period_fast"; default = 9)
+        *Optionally, takes the slower moving average window size ("period_slow"; default = 13)
+    -Returns a dataframe with 'close', 'fast_ewma', 'slow_ewma', 'ewma_diff', and 'signal'
     '''
 
     # build out an exponential moving average crossover signal generator
@@ -42,10 +41,13 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
 
     return cross_over_df
 
-# Exponential Weighted Moving Average
-# takes in a dataframe with columns 'Close' and a datetime as the index
-# returns a dataframe with 'close', 'ewma', 'ewma_diff', and 'signal'
 def ewma(data, period):
+
+    '''
+    'Exponential Weighted Moving Average'
+    -Takes in a dataframe with at least one column 'Close' and a datetime as the index AND a moving average window
+    -Returns a dataframe with 'close', 'ewma', 'ewma_diff', and 'signal'
+    '''
 
     # build out an exponential moving average
     ewma = data.Close.ewm(span=period).mean()
@@ -66,10 +68,15 @@ def ewma(data, period):
 
     return ewma_df
 
-# Bollinger Bands
-# takes in a dataframe with columns 'Close' and a datetime as the index
-# returns a dataframe with 'close', 'middle_band', 'upper_band', 'lower_band', 'band_delta', 'delta_ewma', 'band_signal', and 'signal'
 def b_band(data, bb_period=20, std_dev=2):
+
+    '''
+    'Bollinger Bands'
+    -Takes in a dataframe with at least one column 'Close' and a datetime as the index
+        *Optionally, takes the moving average window size ("bb_period"; default = 20)
+        *Optionally, takes the number of standard deviations away from the moving averge to create the bands ("std_dev"; default = 2)
+    -Returns a dataframe with 'close', 'middle_band', 'upper_band', 'lower_band', 'band_delta', 'delta_ewma', 'band_signal', and 'signal'
+    '''
 
     # Need 3 lines for Bollinger Bands:
         # Middle = simple moving average
@@ -104,10 +111,17 @@ def b_band(data, bb_period=20, std_dev=2):
 
     return bb_df
 
-# MACD
-# takes in a dataframe with columns 'Close' and a datetime as the index
-# returns a dataframe with 'close', 'slow_ewma', 'fast_ewma', 'macd', 'signal_line', 'con_div', 'macd_signal', 'condiv_signal', and 'signal'
 def macd(data, period_slow=26, period_fast=12, period_signal=9):
+
+    '''
+    'Moving Average Convergence/Divergence'
+    -Takes in a dataframe with at least one column 'Close' and a datetime as the index
+        *Optionally, takes the slow ewma window size ("period_slow"; default = 26)
+        *Optionally, takes the fast ewma window size ("period_fast"; default = 12)
+        *Optionally, takes signal line window size ("period_signal"; default = 9)
+    -Returns a dataframe with 'close', 'slow_ewma', 'fast_ewma', 'macd', 'signal_line', 'con_div', 'macd_signal', 'condiv_signal', and 'signal'
+    '''
+
     # The Moving Average Convergence/Divergence (MACD) indicator can be broken into three parts: the signal line, the MACD line, and the convergence/divergence between the two
     # THE MACD LINE
     # The MACD line is created by subtracting a slow EMA from a fast EMA.  
@@ -156,10 +170,14 @@ def macd(data, period_slow=26, period_fast=12, period_signal=9):
 
     return macd_df
 
-# SMA
-# the simple moving average takes in a dataframe with column 'Close' and a datetime index and a moving average window
-# retruns a dataframe with 'close', 'sma', 'sma_delta', and 'signal'
 def sma(data, period):
+
+    '''
+    'Simple Moving Average'
+    -Takes in a dataframe with at least one column 'Close' and a datetime index AND a moving average window ("period")
+    -Returns a dataframe with 'close', 'sma', 'sma_delta', and 'signal'
+    '''
+
     # create the SMA using an input period.  No default period will be provided and user must provide one.
     sma = data.Close.rolling(window=period).mean()
 
@@ -175,10 +193,17 @@ def sma(data, period):
 
     return sma_df
 
-# RSI
-# the Relative Strength Index takies in a dataframe with column 'Close and a datetime index, an exponential moving average window, overbought value and oversold value
-# returns a dataframe with 'close', 'rsi' and 'signal'
 def rsi(data, period=14, overbought=70, oversold=30):
+
+    '''
+    'Relative Strength Index'
+    -Takes in a dataframe with at least one column 'Close' and a datetime index
+        *Optionally, it can take exponential moving average window ("period"; default = 14)
+        *Optionally, it can take overbought value ("overbought"; default = 70)
+        *Optionally, it can take oversold value ("oversold"; default = 30)
+    -Returns a dataframe with 'close', 'rsi' and 'signal'
+    '''
+
         # RSI indicator formula:
         # RSI = 100 - [100/(1 + RS)]
         # RS = RS_gain / abs(RS_loss)
@@ -222,10 +247,17 @@ def rsi(data, period=14, overbought=70, oversold=30):
     data['signal'] = data.rsi.apply(lambda x: rsi_level(x))
     return data
 
-# PSAR
-# The Parabolic Stop and Reverse (PSAR) takes in a dataframe with column 'Close', 'High', and 'Low'
-# returns a dataframe with 'af', 'trend', 'trend_high', 'trend_low', 'ep', 'psar_init', 'psar_final', and 'signal' added to the original df
 def psar(data, af_start=0.02, af_step=0.02, af_max=0.20):
+
+    '''
+    'Parabolic Stop and Reverse'
+    -Takes in a dataframe with at least the following columns included: 'Close', 'High', and 'Low'
+        *Optionally, takes the acceleration factor starting point ("af_start"; default = 0.02)
+        *Optionally, takes the acceleration factor step size ("af_step"; default = 0.02)
+        *Optionally, takes the acceleration factor maximum value ("af_max"; default = 0.20)
+    -Returns 'af', 'trend', 'trend_high', 'trend_low', 'ep', 'psar_init', 'psar_final', and 'signal' appended to the original dataframe
+    '''
+
     # set your initial values (there will be no PSAR for the very first point in a dataset since there is no prior PSAR)
     # AF_start = 0.02 by default, AF_step = 0.02 by default, AF_max = 0.20 by defualt
     # Trend = close[0] - close[1].  If trend > 0, then the trend is 'down', else it is 'up'
@@ -319,10 +351,14 @@ def psar(data, af_start=0.02, af_step=0.02, af_max=0.20):
 
     return data
 
-# VWAP
-# The Volume Weighted Average Price (VWAP) takes in a dataframe with columns 'Close', 'High', 'Low', and 'Volume'
-# returns a dataframe with 'avg_price', 'current_day', 'prev_day', 'daily_cum_vol', 'vwap' and 'signal' added to the original df
 def vwap(data):
+
+    '''
+    'Volume Weighted Average Price'
+    -Takes in a dataframe with at least the following columns included: 'Close', 'High', 'Low', and 'Volume'
+    -Returns 'avg_price', 'current_day', 'prev_day', 'daily_cum_vol', 'vwap' and 'signal' added to the original dataframe
+    '''
+
     # VWAP = volume weighted average price
     # VWAP = sumS(volume) * sum(avg. price) / sum(volume)
         # avg price = (high + close + low) / 3
