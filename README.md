@@ -24,5 +24,5 @@ Crypto trading algorithm
 * [Trading](libs/trading)
 
 ### Resources 
-
-
+* [Google Docs](https://docs.google.com/document/d/1GrOYwcoCp7ZqUtgUvB9V7iqvB39htRWjOiBAbJ3R6TM/edit) which houses a lot of useful links
+* [Kraken Python SDK](https://github.com/veox/python3-krakenex)
