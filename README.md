@@ -21,7 +21,8 @@ Crypto trading algorithm
 * ...
 
 ### Proposal
-* Create a cryptocurrency trading bot that utilizes technical trading signals and NLP.
+* **Problem**: The cryptocurrency markets are very volatile and do not trade on fundamentals, so we would like an alternative model to be able to capture the volatility.  
+* **Solution**: Create a cryptocurrency trading bot that utilizes technical trading signals and NLP to execute a profitable trading strategy.
     * Pull data from Kraken into a SQL database
     * Use the data from the database to generate trading signals based on technical trading indicators
     * Pull in news sources from the CryptoControl or other API and perform a sentiment analysis to generate a trading signal
