@@ -13,10 +13,26 @@ Crypto trading algorithm
 * Travis
 
 ## Table of Contents
+* [Proposal](#Proposal)
+* [Tasks](#Tasks)
 * [Libraries](#Libraries)
 * [Scratch Notebooks](libs/notebooks)
 * [Resources](#Resources)
 * ...
+
+### Proposal
+* **Problem**: The cryptocurrency markets are very volatile and do not trade on fundamentals, so we would like an alternative model to be able to capture the volatility.  
+* **Solution**: Create a cryptocurrency trading bot that utilizes technical trading signals and NLP to execute a profitable trading strategy.
+    * Pull data from Kraken into a SQL database
+    * Use the data from the database to generate trading signals based on technical trading indicators
+    * Pull in news sources from the CryptoControl or other API and perform a sentiment analysis to generate a trading signal
+    * Run all the trading signals through a Random Forest to determine the weights for the generated signals
+    * Run the weighted signals through an LSTM model to predict future pricing
+    * Perform a back test on the model outputs and perform a risk analysis
+    * If the risk analysis is acceptable, send the buy/sell information to Kraken
+    * ***Stretch Goal***: Send the data and metrics to a dashboard to be able to track trades, profit/loss, etc.
+    * Profit!!!
+
 
 ### Libraries
 * [Data](libs/data)
