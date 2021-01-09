@@ -393,9 +393,18 @@ def vwap(data):
     return data
 
 def technical_indicator_signal(asset):
+
+    '''
+    Input: Asset symbol - 'btc', 'eth', 'ltc', 'dot', 'xmr', 'xdg', 'xlm', 'xrp', 'zec', 'nano', 'trx', 'bch', 'xtz', 'ada','oxt'
+    Returns:  Dataframe of technial indicator signals
+
+    NOTICE: When analyzing on the daily timeframe or greater, VWAP will not apply as it is ONLY an intraday indicator.
+    '''
+
     # create a dataframe to house the technical trading signals in
     asset_df = kraken_data(asset)
     technical_signals = pd.DataFrame({
+        'close': asset_df.Close,
         'ewma_x': ewma_crossover(asset_df).signal,
         'macd': macd(asset_df).signal,
         'bollinger': b_band(asset_df).signal,
