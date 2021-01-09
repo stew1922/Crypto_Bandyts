@@ -9,7 +9,7 @@ from libs.data.kraken_data import kraken_data
 # import pandas, numpy, datetime and Path
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import timedelta
 from pathlib import Path
 from libs.data.kraken_data import kraken_data
 
@@ -412,7 +412,7 @@ def technical_indicator_signal(asset):
 
     # create a dataframe to house the technical trading signals
     asset_df = kraken_data(asset)
-    
+
     technical_signals = pd.DataFrame({
         'close': asset_df.Close,
         'ewma_x': signals.ewma_crossover(asset_df).signal,
