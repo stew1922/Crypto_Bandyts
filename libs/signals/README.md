@@ -10,6 +10,7 @@
 * [RSI](#RSI)
 * [PSAR](#PSAR)
 * [VWAP](#VWAP)
+* [Technical Trading Signals](#Technical-Indicator-Signals)
 
 #### Bollinger Bands
 * [Code](signals.py#bollingerbandsignal)
