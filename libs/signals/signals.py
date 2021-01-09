@@ -1,5 +1,17 @@
+# add the current repository to the file path so that Python can find our libraries and then import the kraken_data function from data
+import sys
+import os
+module_path = os.path.abspath(os.path.join('../..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+from libs.data.kraken_data import kraken_data
+
+# import pandas, numpy, datetime and Path
 import pandas as pd
 import numpy as np
+from datetime import datetime
+from pathlib import Path
+from libs.data.kraken_data import kraken_data
 
 def ewma_crossover(data, period_fast=9, period_slow=13):
 
@@ -380,3 +392,19 @@ def vwap(data):
     data.signal = np.where(data.vwap > data.Close, 1, 0)
     return data
 
+def technical_indicator_signal(asset):
+    # create a dataframe to house the technical trading signals in
+    asset_df = kraken_data(asset)
+    technical_signals = pd.DataFrame({
+        'ewma_x': ewma_crossover(asset_df).signal,
+        'macd': macd(asset_df).signal,
+        'bollinger': b_band(asset_df).signal,
+        'rsi': rsi(asset_df).signal,
+        'psar': psar(asset_df).signal,
+        'vwap': vwap(asset_df).signal 
+    })
+
+    # sum the various technical signals together to return a trade 'grade'
+    technical_signals['signal'] = technical_signals.sum(axis='columns')
+
+    return technical_signals
