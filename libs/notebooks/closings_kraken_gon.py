@@ -28,10 +28,6 @@ Note: you can remove a path by doing sys.path.remove('path_you_want_to_remove'),
 but be really careful with that and don't remove any of the default paths!
 If y'all would rather just move the files into the libs folder, 
 
-
-
-
-
 """
 
 # ---------- imports 
@@ -147,11 +143,11 @@ def Concact_Prices(df_price, ft, df_all_prices):
 
 # --- Export df to CSV 
 def export_df_csv(df_all_prices):
-    path_csv = 'Crypto_Bandyts/libs/data/'
-    name_csv = 'crypto_prices1.csv'
-    OHLC_csv = path_csv + name_csv
+    #path_csv = 'Crypto_Bandyts/libs/data/'
+    #name_csv = 'crypto_prices1.csv'
+    #OHLC_csv = path_csv + name_csv
 
-    path = pathlib.Path('/Users/gonzalogarciacontreras/rice15/Crypto_Bandyts/libs/data/crypto_prices.csv')
+    path = pathlib.Path('/Users/gonzalogarciacontreras/rice15/Crypto_Bandyts/libs/data/crypto_prices2.csv')
 
     df_all_prices.to_csv(path)
 
@@ -163,6 +159,8 @@ def export_df_csv(df_all_prices):
 def main():
     #bitcoin (btc), ethereum (eth), litecoin (ltc), polkadot (dot), monero (xmr), dogecoin (xdg), stellar lumens (xlm),
     #ripple (xrp), zcash (zec), nano (nano), tron (trx), bitcoin cash (bch), tezos (xtz), cardano (ada), orchid (oxt)
+    #DOT, XDG, NANO, TRX, and OXT.
+ 
     cryto_list = ['XXBTZUSD', 'XETHZUSD', 'XLTCZUSD', 'DOTUSD', 'XXMRZUSD', 'XDGUSD', 'XXLMZUSD', 'XXRPZUSD', 
                 'XZECZUSD', 'NANOUSD', 'TRXUSD', 'BCHUSD', 'XTZUSD', 'ADAUSD', 'OXTUSD']
 
