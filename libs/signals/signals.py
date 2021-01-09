@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from libs.data.kraken_data import kraken_data
 
+# ewmacrossoversignal
 def ewma_crossover(data, period_fast=9, period_slow=13):
 
     ''' 
@@ -53,6 +54,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
 
     return cross_over_df
 
+# ewmasignal
 def ewma(data, period):
 
     '''
@@ -80,6 +82,7 @@ def ewma(data, period):
 
     return ewma_df
 
+# bollingerbandsignal
 def b_band(data, bb_period=20, std_dev=2):
 
     '''
@@ -123,6 +126,7 @@ def b_band(data, bb_period=20, std_dev=2):
 
     return bb_df
 
+# macdsignal
 def macd(data, period_slow=26, period_fast=12, period_signal=9):
 
     '''
@@ -182,6 +186,7 @@ def macd(data, period_slow=26, period_fast=12, period_signal=9):
 
     return macd_df
 
+# smasignal
 def sma(data, period):
 
     '''
@@ -205,6 +210,7 @@ def sma(data, period):
 
     return sma_df
 
+# rsisignal
 def rsi(data, period=14, overbought=70, oversold=30):
 
     '''
@@ -259,6 +265,7 @@ def rsi(data, period=14, overbought=70, oversold=30):
     data['signal'] = data.rsi.apply(lambda x: rsi_level(x))
     return data
 
+# psarsignal
 def psar(data, af_start=0.02, af_step=0.02, af_max=0.20):
 
     '''
@@ -363,6 +370,7 @@ def psar(data, af_start=0.02, af_step=0.02, af_max=0.20):
 
     return data
 
+# vwapsignal
 def vwap(data):
 
     '''
@@ -392,19 +400,39 @@ def vwap(data):
     data.signal = np.where(data.vwap > data.Close, 1, 0)
     return data
 
+# tradingsignal
 def technical_indicator_signal(asset):
-    # create a dataframe to house the technical trading signals in
+
+    '''
+    Input: Asset symbol - 'btc', 'eth', 'ltc', 'dot', 'xmr', 'xdg', 'xlm', 'xrp', 'zec', 'nano', 'trx', 'bch', 'xtz', 'ada','oxt'
+    Returns:  Dataframe of technial indicator signals
+
+    NOTICE: When analyzing on the daily timeframe or greater, VWAP will not apply as it is ONLY an intraday indicator.
+    '''
+
+    # create a dataframe to house the technical trading signals
     asset_df = kraken_data(asset)
+    
     technical_signals = pd.DataFrame({
-        'ewma_x': ewma_crossover(asset_df).signal,
-        'macd': macd(asset_df).signal,
-        'bollinger': b_band(asset_df).signal,
-        'rsi': rsi(asset_df).signal,
-        'psar': psar(asset_df).signal,
-        'vwap': vwap(asset_df).signal 
+        'close': asset_df.Close,
+        'ewma_x': signals.ewma_crossover(asset_df).signal,
+        'macd': signals.macd(asset_df).signal,
+        'bollinger': signals.b_band(asset_df).signal,
+        'rsi': signals.rsi(asset_df).signal,
+        'psar': signals.psar(asset_df).signal,
+        'vwap': signals.vwap(asset_df).signal 
     })
 
-    # sum the various technical signals together to return a trade 'grade'
-    technical_signals['signal'] = technical_signals.sum(axis='columns')
+    # since VWAP won't work on daily time intervals and greater, we need to check the interval to see if we should include vwap as a column or not
+    daily_seconds = 86400
+    delta_seconds = timedelta.total_seconds(technical_signals.index[1] - technical_signals.index[0])
+    interval = delta_seconds / daily_seconds
+
+    if interval >= 1:
+        # if the interval is greater than or equal to 1, then do not include VWAP
+        technical_signals = technical_signals.drop(columns='vwap')
+
+    # sum the various technical signals together to return a trade 'grade' or signal
+    technical_signals['signal'] = technical_signals.drop(columns=['close']).sum(axis='columns')
 
     return technical_signals
