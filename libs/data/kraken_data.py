@@ -24,7 +24,7 @@ crypto_pairs = {
 
 # store all the data returned into one single 'data' dataframe - will parse out next into individual crypto dataframes
 
-data_file = Path('../data/crypto_prices.csv')
+data_file = Path('../data/crypto_prices_cleaned.csv')
 data = pd.read_csv(data_file, parse_dates=True, infer_datetime_format=True, delimiter=',')
 data.set_index('Date', inplace=True)
 
