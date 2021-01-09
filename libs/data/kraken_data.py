@@ -26,6 +26,7 @@ crypto_pairs = {
 
 data_file = Path('../data/crypto_prices_cleaned.csv')
 data = pd.read_csv(data_file, parse_dates=True, infer_datetime_format=True, delimiter=',')
+data['Date'] = pd.to_datetime(data.Date, infer_datetime_format=True)
 data.set_index('Date', inplace=True)
 
 # parse out 'data' df into individual crypto dataframes (i.e.- btc_df)
