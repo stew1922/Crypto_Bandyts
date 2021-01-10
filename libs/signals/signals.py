@@ -14,7 +14,7 @@ from pathlib import Path
 from libs.data.kraken_data import kraken_data
 
 # ewmacrossoversignal
-def ewma_crossover(data, period_fast=9, period_slow=13):
+def ewma_crossover(data, period_fast=3, period_slow=7):
 
     ''' 
     'Exponential Weighted Moving Average Crossover Indicator'
@@ -25,7 +25,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
     '''
 
     # build out an exponential moving average crossover signal generator
-    # standard is to use windows of 9 and 13 for fast and slow, respectively
+    # standard is to use windows of 20 and 50 for fast and slow, respectively
     
     # Check to make sure the fast EWMA is smaller than the slow EWMA
     if period_fast >= period_slow:
@@ -38,7 +38,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
     ewma_slow = data.Close.ewm(span=period_slow).mean()
 
     # Create a dataframe that consolidates and generates signal data
-    # the signal column of the dataframe will be binary: 0 = bearish, 1 = bullish
+    # the signal column of the dataframe will be binary: -1 = bearish, 1 = bullish
         # -1 is bearish in the condition that the fast ewma is below or equal to the slow ewma
         # 1 is bullish in the condiditon that the fast ewma is above the slow ewma
     cross_over_df = pd.DataFrame(
@@ -50,7 +50,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
         }
         )
 
-    cross_over_df['signal'] = cross_over_df.ewma_diff.apply(lambda x: 1 if x > 0 else -1)
+    cross_over_df['signal'] = np.where(ewma_fast > ewma_slow, 1, -1)
 
     return cross_over_df
 
@@ -67,18 +67,18 @@ def ewma(data, period):
     ewma = data.Close.ewm(span=period).mean()
 
     # Create a dataframe that consolidates and generates signal data
-    # the signal column of the dataframe will be binary: 0 = bearish, 1 = bullish
+    # the signal column of the dataframe will be binary: -1 = bearish, 1 = bullish
         # -1 is bearish in the condition that the signal is above the closing price
         # 1 is bullish in the condiditon that the signal is below the closing price
     ewma_df = pd.DataFrame(
         {
         'close': data.Close, 
         'ewma': ewma,
-        'ewma_diff': data.Close - ewma
+        'ewma_diff': ewma - data.Close
         }
         )
 
-    ewma_df['signal'] = ewma_df.ewma_diff.apply(lambda x: 1 if x > 0 else -1)
+    ewma_df['signal'] = np.where(ewma_diff > 0, 1, -1)
 
     return ewma_df
 
@@ -122,7 +122,7 @@ def b_band(data, bb_period=20, std_dev=2):
         'band_signal': band_signal}
     )
 
-    bb_df['signal'] = bb_df.band_signal.apply(lambda x: 1 if x < 0 else -1)
+    bb_df['signal'] = np.where(band_signal > 0, -1, 1)
 
     return bb_df
 
@@ -168,17 +168,17 @@ def macd(data, period_slow=26, period_fast=12, period_signal=9):
         'con_div': condiv}
         )
 
-    # add a column that returns a 0 or 1 for the MACD signal.  
+    # add a column that returns a -1 or 1 for the MACD signal.  
         # -1 means the MACD is below the zero line and is bearish.  
         # 1 means the MACD is above the zero line and is bullish.
-    macd_df['macd_signal'] = macd_df['macd'].apply(lambda x: 1 if x > 0 else -1)
+    macd_df['macd_signal'] = np.where(macd > 0, 1, -1)
 
-    # add a column that return a 0 or 1 for the convergence/divergence.  
+    # add a column that return a -1 or 1 for the convergence/divergence.  
         # -1 means it is negative and bearish.  
         # 1 means it is positive and bullish. 
-    macd_df['condiv_signal'] = macd_df['con_div'].apply(lambda x: 1 if x > 0 else -1)
+    macd_df['condiv_signal'] = np.where(condiv > 0, 1, -1)
 
-    # add a column that returns a -1, 0, or 1.  This column is the sum of the previous two.  
+    # add a column that returns a -1, 0, or 1.  This column is the sum of the previous two (so in order to get it to -1, 0, +1 we must divide by 2).  
         # -1 is bearish (all signals are bearish)
         # 0 is neutral (one signal is bullish and one is bearish) 
         # 1 is bullish (all signals are bullish)
@@ -202,16 +202,16 @@ def sma(data, period):
     sma_df = pd.DataFrame({
         'close': data.Close,
         'sma': sma,
-        'sma_delta': data.Close - sma
+        'sma_delta': sma - data.Close
     })
 
     # add a column that return -1 or 1: -1 = SMA above the asset price and is bearish, 1 = SMA below the asset price and is bullish
-    sma_df['signal'] = sma_df.sma_delta.apply(lambda x: 1 if x > 0 else -1)
+    sma_df['signal'] = np.where(sma_delta > 0, 1, -1)
 
     return sma_df
 
 # rsisignal
-def rsi(data, period=14, overbought=70, oversold=30):
+def rsi(data, period=14, overbought=60, oversold=40):
 
     '''
     'Relative Strength Index'
