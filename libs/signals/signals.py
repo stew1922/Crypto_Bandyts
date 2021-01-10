@@ -14,7 +14,7 @@ from pathlib import Path
 from libs.data.kraken_data import kraken_data
 
 # ewmacrossoversignal
-def ewma_crossover(data, period_fast=3, period_slow=7):
+def ewma_crossover(data, period_fast=9, period_slow=13):
 
     ''' 
     'Exponential Weighted Moving Average Crossover Indicator'
@@ -211,7 +211,7 @@ def sma(data, period):
     return sma_df
 
 # rsisignal
-def rsi(data, period=14, overbought=60, oversold=40):
+def rsi(data, period=14, overbought=70, oversold=30):
 
     '''
     'Relative Strength Index'
