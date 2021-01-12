@@ -11,7 +11,6 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 from pathlib import Path
-from libs.data.kraken_data import kraken_data
 
 # ewmacrossoversignal
 def ewma_crossover(data, period_fast=9, period_slow=13):
@@ -25,7 +24,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
     '''
 
     # build out an exponential moving average crossover signal generator
-    # standard is to use windows of 20 and 50 for fast and slow, respectively
+    # standard is to use windows of 9 and 13 for fast and slow, respectively
     
     # Check to make sure the fast EWMA is smaller than the slow EWMA
     if period_fast >= period_slow:
@@ -375,7 +374,7 @@ def vwap(data):
 
     '''
     'Volume Weighted Average Price'
-    -Takes in a dataframe with at least the following columns included: 'Close', 'High', 'Low', and 'Volume'
+    -Takes in a dataframe with at least the following columns included: 'Close', 'High', 'Low', and 'Volume' and a datetime index
     -Returns 'avg_price', 'current_day', 'prev_day', 'daily_cum_vol', 'vwap' and 'signal' added to the original dataframe
     '''
 
@@ -400,6 +399,43 @@ def vwap(data):
     data.signal = np.where(data.vwap > data.Close, 1, 0)
     return data
 
+# volumeewmasignal
+def volume_ewma(data, period):
+
+    '''
+    'Volume Exponential Weighted Average'
+    -Takes in a dataframe with at least one column 'Volume' and a datetime index AND a moving average window 'period'
+    -Returns a dataframe with 'volume_ewma', and 'signal' added to the original dataframe
+    '''
+
+    # create a column with the exponential weighted moving average using the period input from the function call
+    data['volume_ewma'] = data.Volume.ewm(span=period).mean()
+
+    # add the signal column: 1 if the volume is higher than the ewma and -1 if it is lower
+    data['signal'] = np.where(data.volume_ewma <= data.Volume, 1, -1)
+
+    return data
+
+# volumeewma_crossoversignal
+def volume_ewma_crossover(data, period_fast=9, period_slow=13):
+
+    '''
+    'Volume Exponential Weighted Average Crossover'
+    -Takes in a dataframe with at least one column 'Volume' and a datetime index
+        *Optionally, takes the slow ewma window size ("period_slow"; default = 13)
+        *Optionally, takes the fast ewma window size ("period_fast"; default = 9)
+    -Returns a dataframe with 'slow_ewma', 'fast_ewam', and 'signal' added to the original dataframe
+    '''
+
+    # create a column for the fast and the slow ewma
+    data['slow_ewma'] = data.Volume.ewm(span=period_slow).mean()
+    data['fast_ewma'] = data.Volume.ewm(span=period_fast).mean()
+
+    # create a column for the signal: 1 if the fast_ewma is above the slow_ewma, otherwise -1
+    data['signal'] = np.where(data.fast_ewma > data.slow_ewma, 1, -1)
+
+    return data
+
 # tradingsignal
 def technical_indicator_signal(asset):
 
@@ -410,7 +446,7 @@ def technical_indicator_signal(asset):
     NOTICE: When analyzing on the daily timeframe or greater, VWAP will not apply as it is ONLY an intraday indicator.
     '''
 
-    # create a dataframe to house the technical trading signals
+    # create a dataframe to house the technical trading signals from the kraken_data function found in libs/data/kraken_data.py
     asset_df = kraken_data(asset)
 
     technical_signals = pd.DataFrame({
@@ -420,7 +456,8 @@ def technical_indicator_signal(asset):
         'bollinger': b_band(asset_df).signal,
         'rsi': rsi(asset_df).signal,
         'psar': psar(asset_df).signal,
-        'vwap': vwap(asset_df).signal 
+        'vwap': vwap(asset_df).signal,
+        'volume_ewma_x': volume_ewma_crossover(asset_df)
     })
 
     # since VWAP won't work on daily time intervals and greater, we need to check the interval to see if we should include vwap as a column or not
