@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 from pathlib import Path
+from libs.data.kraken_data import kraken_data
 
 # ewmacrossoversignal
 def ewma_crossover(data, period_fast=9, period_slow=13):
@@ -37,7 +38,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
     ewma_slow = data.Close.ewm(span=period_slow).mean()
 
     # Create a dataframe that consolidates and generates signal data
-    # the signal column of the dataframe will be binary: -1 = bearish, 1 = bullish
+    # the signal column of the dataframe will be binary: 0 = bearish, 1 = bullish
         # -1 is bearish in the condition that the fast ewma is below or equal to the slow ewma
         # 1 is bullish in the condiditon that the fast ewma is above the slow ewma
     cross_over_df = pd.DataFrame(
@@ -49,7 +50,7 @@ def ewma_crossover(data, period_fast=9, period_slow=13):
         }
         )
 
-    cross_over_df['signal'] = np.where(ewma_fast > ewma_slow, 1, -1)
+    cross_over_df['signal'] = cross_over_df.ewma_diff.apply(lambda x: 1 if x > 0 else -1)
 
     return cross_over_df
 
@@ -66,18 +67,18 @@ def ewma(data, period):
     ewma = data.Close.ewm(span=period).mean()
 
     # Create a dataframe that consolidates and generates signal data
-    # the signal column of the dataframe will be binary: -1 = bearish, 1 = bullish
+    # the signal column of the dataframe will be binary: 0 = bearish, 1 = bullish
         # -1 is bearish in the condition that the signal is above the closing price
         # 1 is bullish in the condiditon that the signal is below the closing price
     ewma_df = pd.DataFrame(
         {
         'close': data.Close, 
         'ewma': ewma,
-        'ewma_diff': ewma - data.Close
+        'ewma_diff': data.Close - ewma
         }
         )
 
-    ewma_df['signal'] = np.where(ewma_diff > 0, 1, -1)
+    ewma_df['signal'] = ewma_df.ewma_diff.apply(lambda x: 1 if x > 0 else -1)
 
     return ewma_df
 
@@ -121,7 +122,7 @@ def b_band(data, bb_period=20, std_dev=2):
         'band_signal': band_signal}
     )
 
-    bb_df['signal'] = np.where(band_signal > 0, -1, 1)
+    bb_df['signal'] = bb_df.band_signal.apply(lambda x: 1 if x < 0 else -1)
 
     return bb_df
 
@@ -167,17 +168,17 @@ def macd(data, period_slow=26, period_fast=12, period_signal=9):
         'con_div': condiv}
         )
 
-    # add a column that returns a -1 or 1 for the MACD signal.  
+    # add a column that returns a 0 or 1 for the MACD signal.  
         # -1 means the MACD is below the zero line and is bearish.  
         # 1 means the MACD is above the zero line and is bullish.
-    macd_df['macd_signal'] = np.where(macd > 0, 1, -1)
+    macd_df['macd_signal'] = macd_df['macd'].apply(lambda x: 1 if x > 0 else -1)
 
-    # add a column that return a -1 or 1 for the convergence/divergence.  
+    # add a column that return a 0 or 1 for the convergence/divergence.  
         # -1 means it is negative and bearish.  
         # 1 means it is positive and bullish. 
-    macd_df['condiv_signal'] = np.where(condiv > 0, 1, -1)
+    macd_df['condiv_signal'] = macd_df['con_div'].apply(lambda x: 1 if x > 0 else -1)
 
-    # add a column that returns a -1, 0, or 1.  This column is the sum of the previous two (so in order to get it to -1, 0, +1 we must divide by 2).  
+    # add a column that returns a -1, 0, or 1.  This column is the sum of the previous two.  
         # -1 is bearish (all signals are bearish)
         # 0 is neutral (one signal is bullish and one is bearish) 
         # 1 is bullish (all signals are bullish)
@@ -201,11 +202,11 @@ def sma(data, period):
     sma_df = pd.DataFrame({
         'close': data.Close,
         'sma': sma,
-        'sma_delta': sma - data.Close
+        'sma_delta': data.Close - sma
     })
 
     # add a column that return -1 or 1: -1 = SMA above the asset price and is bearish, 1 = SMA below the asset price and is bullish
-    sma_df['signal'] = np.where(sma_delta > 0, 1, -1)
+    sma_df['signal'] = sma_df.sma_delta.apply(lambda x: 1 if x > 0 else -1)
 
     return sma_df
 
@@ -374,7 +375,7 @@ def vwap(data):
 
     '''
     'Volume Weighted Average Price'
-    -Takes in a dataframe with at least the following columns included: 'Close', 'High', 'Low', and 'Volume' and a datetime index
+    -Takes in a dataframe with at least the following columns included: 'Close', 'High', 'Low', and 'Volume'
     -Returns 'avg_price', 'current_day', 'prev_day', 'daily_cum_vol', 'vwap' and 'signal' added to the original dataframe
     '''
 
@@ -399,43 +400,6 @@ def vwap(data):
     data.signal = np.where(data.vwap > data.Close, 1, 0)
     return data
 
-# volumeewmasignal
-def volume_ewma(data, period):
-
-    '''
-    'Volume Exponential Weighted Average'
-    -Takes in a dataframe with at least one column 'Volume' and a datetime index AND a moving average window 'period'
-    -Returns a dataframe with 'volume_ewma', and 'signal' added to the original dataframe
-    '''
-
-    # create a column with the exponential weighted moving average using the period input from the function call
-    data['volume_ewma'] = data.Volume.ewm(span=period).mean()
-
-    # add the signal column: 1 if the volume is higher than the ewma and -1 if it is lower
-    data['signal'] = np.where(data.volume_ewma <= data.Volume, 1, -1)
-
-    return data
-
-# volumeewma_crossoversignal
-def volume_ewma_crossover(data, period_fast=9, period_slow=13):
-
-    '''
-    'Volume Exponential Weighted Average Crossover'
-    -Takes in a dataframe with at least one column 'Volume' and a datetime index
-        *Optionally, takes the slow ewma window size ("period_slow"; default = 13)
-        *Optionally, takes the fast ewma window size ("period_fast"; default = 9)
-    -Returns a dataframe with 'slow_ewma', 'fast_ewam', and 'signal' added to the original dataframe
-    '''
-
-    # create a column for the fast and the slow ewma
-    data['slow_ewma'] = data.Volume.ewm(span=period_slow).mean()
-    data['fast_ewma'] = data.Volume.ewm(span=period_fast).mean()
-
-    # create a column for the signal: 1 if the fast_ewma is above the slow_ewma, otherwise -1
-    data['signal'] = np.where(data.fast_ewma > data.slow_ewma, 1, -1)
-
-    return data
-
 # tradingsignal
 def technical_indicator_signal(asset):
 
@@ -446,7 +410,7 @@ def technical_indicator_signal(asset):
     NOTICE: When analyzing on the daily timeframe or greater, VWAP will not apply as it is ONLY an intraday indicator.
     '''
 
-    # create a dataframe to house the technical trading signals from the kraken_data function found in libs/data/kraken_data.py
+    # create a dataframe to house the technical trading signals
     asset_df = kraken_data(asset)
 
     technical_signals = pd.DataFrame({
@@ -456,8 +420,7 @@ def technical_indicator_signal(asset):
         'bollinger': b_band(asset_df).signal,
         'rsi': rsi(asset_df).signal,
         'psar': psar(asset_df).signal,
-        'vwap': vwap(asset_df).signal,
-        'volume_ewma_x': volume_ewma_crossover(asset_df)
+        'vwap': vwap(asset_df).signal 
     })
 
     # since VWAP won't work on daily time intervals and greater, we need to check the interval to see if we should include vwap as a column or not
