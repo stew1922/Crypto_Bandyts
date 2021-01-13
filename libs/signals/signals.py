@@ -457,7 +457,7 @@ def technical_indicator_signal(asset):
         'rsi': rsi(asset_df).signal,
         'psar': psar(asset_df).signal,
         'vwap': vwap(asset_df).signal,
-        'volume_ewma_x': volume_ewma_crossover(asset_df)
+        'volume_ewma_x': volume_ewma_crossover(asset_df).signal
     })
 
     # since VWAP won't work on daily time intervals and greater, we need to check the interval to see if we should include vwap as a column or not
