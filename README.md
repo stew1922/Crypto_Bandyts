@@ -38,7 +38,6 @@ Crypto trading algorithm
 - [x] Create a trading signal with the historical Kraken data and technical trading indicators
 - [x] Create a trading signal based on a crypto news sentiment analysis
 - [ ] Create a Random Forest model to determine the trading signals' weights
-- [ ] Create a LSTM model to predict future prices with the weighted trading signals
 - [ ] Create a back test module to analyze the risk
 - [ ] Create a trading module to buy or sell based on the risk analysis
 
