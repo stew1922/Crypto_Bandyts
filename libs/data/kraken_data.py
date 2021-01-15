@@ -4,7 +4,7 @@ import pandas as pd
 # Crypto name-pair dictionary to easily look up the different pairs
 # the dictionary keys are the 'common' representation of the crypto abbreviation, while the values are the Kraken representation
 
-crypto_pairs = {
+crypto_names = {
     'btc': 'XBT',
     'eth': 'ETH',
     'ltc': 'LTC',
@@ -24,8 +24,9 @@ crypto_pairs = {
 
 # store all the data returned into one single 'data' dataframe - will parse out next into individual crypto dataframes
 
-data_file = Path('../data/crypto_prices.csv')
+data_file = Path('../data/crypto_prices2.csv')
 data = pd.read_csv(data_file, parse_dates=True, infer_datetime_format=True, delimiter=',')
+data['Date'] = pd.to_datetime(data.Date, infer_datetime_format=True)
 data.set_index('Date', inplace=True)
 
 # parse out 'data' df into individual crypto dataframes (i.e.- btc_df)
@@ -43,15 +44,15 @@ def crypto_columns(data):
     # initiate the columns dictionary
     columns_dict = {}
     # create a list for each asset
-    for crypto in crypto_pairs:
-        columns_dict[crypto_pairs[crypto]] = []
+    for crypto in crypto_names:
+        columns_dict[crypto_names[crypto]] = []
     
     # populate each list with column names from data
     all_columns_list = all_columns(data)
-    for crypto in crypto_pairs:
+    for crypto in crypto_names:
         for column in all_columns_list:
-            if crypto_pairs[crypto] in column:
-                columns_dict[crypto_pairs[crypto]].append(column)
+            if crypto_names[crypto] in column:
+                columns_dict[crypto_names[crypto]].append(column)
     
     return columns_dict
 
@@ -59,11 +60,11 @@ def crypto_columns(data):
 def dataframe(data, asset):
     # create a dictionary of empty dataframes for each crypto
     dataframes = {}
-    for crypto in crypto_pairs:
+    for crypto in crypto_names:
         dataframes[crypto] = pd.DataFrame({})
     # populate the dataframes from above with their respective columns from 'data'
-    for crypto in crypto_pairs:
-        dataframes[crypto] = data[crypto_columns(data)[crypto_pairs[crypto]]]
+    for crypto in crypto_names:
+        dataframes[crypto] = data[crypto_columns(data)[crypto_names[crypto]]]
 
     return dataframes[asset]
 

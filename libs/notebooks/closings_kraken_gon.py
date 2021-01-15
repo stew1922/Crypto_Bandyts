@@ -147,7 +147,7 @@ def export_df_csv(df_all_prices):
     #name_csv = 'crypto_prices1.csv'
     #OHLC_csv = path_csv + name_csv
 
-    path = pathlib.Path('/Users/gonzalogarciacontreras/rice15/Crypto_Bandyts/libs/data/crypto_prices2.csv')
+    path = pathlib.Path('/Users/gonzalogarciacontreras/rice15/Crypto_Bandyts/libs/data/crypto_pricesx.csv')
 
     df_all_prices.to_csv(path)
 
@@ -161,8 +161,11 @@ def main():
     #ripple (xrp), zcash (zec), nano (nano), tron (trx), bitcoin cash (bch), tezos (xtz), cardano (ada), orchid (oxt)
     #DOT, XDG, NANO, TRX, and OXT.
  
-    cryto_list = ['XXBTZUSD', 'XETHZUSD', 'XLTCZUSD', 'DOTUSD', 'XXMRZUSD', 'XDGUSD', 'XXLMZUSD', 'XXRPZUSD', 
-                'XZECZUSD', 'NANOUSD', 'TRXUSD', 'BCHUSD', 'XTZUSD', 'ADAUSD', 'OXTUSD']
+    cryto_list = ['XXBTZUSD']
+
+    #cryto_list = ['XXBTZUSD', 'XETHZUSD', 'XLTCZUSD', 'DOTUSD', 'XXMRZUSD', 'XDGUSD', 'XXLMZUSD', 'XXRPZUSD', 
+    #            'XZECZUSD', 'NANOUSD', 'TRXUSD', 'BCHUSD', 'XTZUSD', 'ADAUSD', 'OXTUSD']
+
 
     interval = '1440'
     since = ''
