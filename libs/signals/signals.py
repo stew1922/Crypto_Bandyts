@@ -451,6 +451,7 @@ def technical_indicator_signal(asset):
 
     technical_signals = pd.DataFrame({
         'close': asset_df.Close,
+        'volume': asset_df.Volume,
         'ewma_x': ewma_crossover(asset_df).signal,
         'macd': macd(asset_df).signal,
         'bollinger': b_band(asset_df).signal,
