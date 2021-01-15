@@ -97,7 +97,7 @@ def get_crypto_prices ():
     # Compute daily change in volume 
     crypto_price['vol_change'] = (crypto_price[['volume']].pct_change())
     crypto_price['vol_change'] = crypto_price['vol_change'].replace(-np.inf, np.nan).dropna()
-    #crypto_price.drop('volume', axis=1, inplace=True)
+    crypto_price.drop(columns=['volume'], inplace=True)
 
     #crypto_price.drop(btc_df.index[0], inplace=True)         #delete 1st row nan 
 
@@ -247,7 +247,7 @@ def model_train_predict(X_train_scaled, X_test_scaled, y_train, y_test):
 
     # Plot last 10 records of predicted vs. actual results
     #Results[['positive_return', 'Predicted Value']].plot(figsize=(20,10))
-    Results[['positive_return', 'predicted_value']].tail(30).plot()
+    # Results[['positive_return', 'predicted_value']].tail(30).plot()
 
 
     #-------------------- ### Replace Predicted Values 0 as -1 (For Shorting)
