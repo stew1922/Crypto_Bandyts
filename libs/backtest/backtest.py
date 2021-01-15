@@ -1,4 +1,7 @@
-# create a results dataframe with returns
+import pandas as pd
+import numpy as np
+import hvplot.pandas
+
 X_test = []
 y_test = []
 
@@ -57,3 +60,5 @@ def model_plot(data, start_date="", end_date=""):
     cum_return_plot = model_stats(data)[start_date:end_date].hvplot()
     asset_price = data.close[start_date:end_date].hvplot()
     return (cum_return_plot * asset_price).opts(show_legend=False, ylabel="Asset/Portfolio Value, $s")
+
+    
