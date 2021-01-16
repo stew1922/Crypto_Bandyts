@@ -1,11 +1,9 @@
 <<<<<<< HEAD
-##TBD
-
 
 # BTC Trading Strategy
 ### Goal of project 2 - systematically enter/exit trades profitably via algo bot
 ---
-
+##Not complete at this time 1/16/21 - EIFLER
 ### HOW - Execution Strategy - Placing the trade
 #### 1. Signal Generation = direction
 #### 2. Risk Allocation = how much to buy/sell, allocation % of portfolio
