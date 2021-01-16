@@ -6,6 +6,7 @@ Really good example in the class repo:  class/15-Algorithmic-Trading/3/Activitie
 """
 
 
+
 # ------- Initial imports
 # Initial imports
 import pandas as pd
@@ -96,7 +97,7 @@ def get_crypto_prices ():
     # Compute daily change in volume 
     crypto_price['vol_change'] = (crypto_price[['volume']].pct_change())
     crypto_price['vol_change'] = crypto_price['vol_change'].replace(-np.inf, np.nan).dropna()
-    crypto_price.drop(columns=['volume'], inplace=True)
+    #crypto_price.drop('volume', axis=1, inplace=True)
 
     #crypto_price.drop(btc_df.index[0], inplace=True)         #delete 1st row nan 
 
@@ -121,9 +122,6 @@ def get_merged_dataframes(trading_signals_df, crypto_sentiment, crypto_price):
 
     return trading_signals_df
 
-def x_var_list():
-    # return ['ewma_x', 'macd', 'bollinger', 'rsi', 'psar', 'positive_volume', 'Sentiment_Signal']
-    return ['ewma_x', 'macd', 'bollinger', 'rsi', 'psar', 'volume_ewma_x', 'Sentiment_Signal']
 
 def construct_X_y(trading_signals_df):
     #----------------# Construct the dependent variable y where if daily return is greater than 0, then 1, else, 0.
@@ -133,19 +131,19 @@ def construct_X_y(trading_signals_df):
 
 
     #---------------# Set X variable list of features
-    x_var = x_var_list()
+    x_var_list = ['ewma_x', 'macd', 'bollinger', 'rsi', 'psar', 'positive_volume', 'Sentiment_Signal']
 
     # Filter by x-variable list
     #print(trading_signals_df[x_var_list].tail())
 
 
     #---------------- # Shift DataFrame values by 1
-    trading_signals_df[x_var] = trading_signals_df[x_var].shift(1)
-    #print(trading_signals_df[x_var].tail())
+    trading_signals_df[x_var_list] = trading_signals_df[x_var_list].shift(1)
+    #print(trading_signals_df[x_var_list].tail())
 
 
     #----------------- # Drop NAs and replace positive/negative infinity values
-    trading_signals_df.dropna(subset=x_var, inplace=True)
+    trading_signals_df.dropna(subset=x_var_list, inplace=True)
     trading_signals_df.dropna(subset=['daily_return', 'vol_change'], inplace=True)
     trading_signals_df = trading_signals_df.replace([np.inf, -np.inf], np.nan)
     #print(trading_signals_df.head())
@@ -153,20 +151,12 @@ def construct_X_y(trading_signals_df):
 
 
     #---------------- # Construct training start and end dates
-    # training_start = trading_signals_df.index.min().strftime(format= '%Y-%m-%d')
-    # training_end = '2020-03-30'
-
-    # # Construct testing start and end dates
-    # testing_start =  '2020-04-01'
-    # testing_end = trading_signals_df.index.max().strftime(format= '%Y-%m-%d')
-
-    train_test_split_percentage = 70
-
     training_start = trading_signals_df.index.min().strftime(format= '%Y-%m-%d')
-    training_end = trading_signals_df.iloc[:int(len(trading_signals_df) * (train_test_split_percentage / 100))].index.max().strftime(format= '%Y-%m-%d')
+    training_end = '2020-06-30'
 
-    testing_start = trading_signals_df[training_end:].iloc[1:].index.min().strftime(format= '%Y-%m-%d')
-    testing_end = trading_signals_df[testing_start:].index.max().strftime(format= '%Y-%m-%d')
+    # Construct testing start and end dates
+    testing_start =  '2020-07-01'
+    testing_end = trading_signals_df.index.max().strftime(format= '%Y-%m-%d')
 
     # Print training and testing start/end dates
     #print(f"Training Start: {training_start}")
@@ -176,7 +166,7 @@ def construct_X_y(trading_signals_df):
 
 
     #-------------- # Construct the X_train and y_train datasets
-    X_train = trading_signals_df[x_var][training_start:training_end]
+    X_train = trading_signals_df[x_var_list][training_start:training_end]
     y_train = trading_signals_df['positive_return'][training_start:training_end]
 
     #print(X_train.tail())
@@ -184,7 +174,7 @@ def construct_X_y(trading_signals_df):
 
 
     #---------------- # Separate X test and y test datasets
-    X_test = trading_signals_df[x_var][testing_start:testing_end]
+    X_test = trading_signals_df[x_var_list][testing_start:testing_end]
     y_test = trading_signals_df['positive_return'][testing_start:testing_end]
 
     #print(X_test.tail())
@@ -219,7 +209,7 @@ def model_train_predict(X_train_scaled, X_test_scaled, y_train, y_test):
     # The parameters for the RandomTress seems to be very weak, only 100 trees and 3 levels
     # Might it be better n_estimators=2000, max_depth=10
 
-    model = RandomForestClassifier(n_estimators=1000, random_state=0)
+    model = RandomForestClassifier(n_estimators=100, max_depth=3, random_state=0)
     model.fit(X_train_scaled, y_train)
 
     # Make a prediction of "y" values from the X_test dataset
@@ -257,7 +247,7 @@ def model_train_predict(X_train_scaled, X_test_scaled, y_train, y_test):
 
     # Plot last 10 records of predicted vs. actual results
     #Results[['positive_return', 'Predicted Value']].plot(figsize=(20,10))
-    # Results[['positive_return', 'predicted_value']].tail(30).plot()
+    Results[['positive_return', 'predicted_value']].tail(30).plot()
 
 
     #-------------------- ### Replace Predicted Values 0 as -1 (For Shorting)

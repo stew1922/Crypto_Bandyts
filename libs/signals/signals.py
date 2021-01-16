@@ -451,13 +451,14 @@ def technical_indicator_signal(asset):
 
     technical_signals = pd.DataFrame({
         'close': asset_df.Close,
-        'ewma_x': ewma_crossover(asset_df).signal,
-        'macd': macd(asset_df).signal,
-        'bollinger': b_band(asset_df).signal,
-        'rsi': rsi(asset_df).signal,
+        'volume': asset_df.Volume,
+        'ewma_x': ewma_crossover(asset_df, period_fast=6, period_slow=9).signal,
+        'macd': macd(asset_df, period_fast=7, period_slow=9, period_signal=5).signal,
+        'bollinger': b_band(asset_df, bb_period=9).signal,
+        'rsi': rsi(asset_df, oversold=35).signal,
         'psar': psar(asset_df).signal,
         'vwap': vwap(asset_df).signal,
-        'volume_ewma_x': volume_ewma_crossover(asset_df).signal
+        'volume_ewma_x': volume_ewma_crossover(asset_df, period_fast=1, period_slow=7).signal
     })
 
     # since VWAP won't work on daily time intervals and greater, we need to check the interval to see if we should include vwap as a column or not
