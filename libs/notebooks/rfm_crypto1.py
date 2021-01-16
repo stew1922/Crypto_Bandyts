@@ -6,7 +6,6 @@ Really good example in the class repo:  class/15-Algorithmic-Trading/3/Activitie
 """
 
 
-
 # ------- Initial imports
 # Initial imports
 import pandas as pd
