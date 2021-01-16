@@ -18,7 +18,6 @@ Crypto trading algorithm
 * [Libraries](#Libraries)
 * [Scratch Notebooks](libs/notebooks)
 * [Resources](#Resources)
-* ...
 
 ### Proposal
 * **Problem**: The cryptocurrency markets are very volatile and do not trade on fundamentals, so we would like an alternative model to be able to capture the volatility.  
@@ -44,8 +43,11 @@ Crypto trading algorithm
 ### Libraries
 * [Data](libs/data)
 * [Signals](libs/signals)
+* [Machine Learning](libs/ml-models)
+* [Backtesting](libs/backtest)
 * [Trading](libs/trading)
 
 ### Resources 
 * [Google Docs](https://docs.google.com/document/d/1GrOYwcoCp7ZqUtgUvB9V7iqvB39htRWjOiBAbJ3R6TM/edit) which houses a lot of useful links
 * [Kraken Python SDK](https://github.com/veox/python3-krakenex)
+* [Presentation](https://docs.google.com/presentation/d/1Kz9JU7hRtkeckNYInshUGnPMhwsbvH0G9_z9Z8SRfOM/edit?ts=6000f74a#slide=id.gb63e9279bc_1_15)
