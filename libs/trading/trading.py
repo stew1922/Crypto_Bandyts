@@ -17,7 +17,7 @@ load_dotenv()
 
 # Import environment variables
 kraken_public_key = os.getenv("KRAKEN_PUBLIC_KEY")
-kraken_secret_key = os.getenv("KRAKEN_SECRET_KEY")  #bandyt5 - expiry 1/17/21 0:0:0:0UTC
+kraken_secret_key = os.getenv("KRAKEN_SECRET_KEY")  #SET WEEK OF 1/11 - bandyt5 - expiry 1/17/21 0:0:0:0UTC
 
 # Set the public and private keys for the API
 exchange = ccxt.kraken({
