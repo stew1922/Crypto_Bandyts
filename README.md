@@ -33,7 +33,7 @@ Crypto trading algorithm
     * Profit!!!
 
 ### Tasks
-- [x] Pull historic Kraken data and store in a SQL db
+- [x] Pull historic Kraken data and store in a .cvs files/SQL db
 - [x] Create a trading signal with the historical Kraken data and technical trading indicators
 - [x] Create a trading signal based on a crypto news sentiment analysis
 - [x] Create a Random Forest model to determine the trading signals' weights
