@@ -18,12 +18,11 @@ Crypto trading algorithm
 * [Libraries](#Libraries)
 * [Scratch Notebooks](libs/notebooks)
 * [Resources](#Resources)
-* ...
 
 ### Proposal
 * **Problem**: The cryptocurrency markets are very volatile and do not trade on fundamentals, so we would like an alternative model to be able to capture the volatility.  
 * **Solution**: Create a cryptocurrency trading bot that utilizes technical trading signals and NLP to execute a profitable trading strategy.
-    * Pull data from Kraken into a SQL database
+    * Pull data from Kraken into a .cvs files/SQL database
     * Use the data from the database to generate trading signals based on technical trading indicators
     * Pull in news sources from the CryptoControl or other API and perform a sentiment analysis to generate a trading signal
     * Run all the trading signals through a Random Forest to determine the weights for the generated signals
@@ -34,7 +33,7 @@ Crypto trading algorithm
     * Profit!!!
 
 ### Tasks
-- [x] Pull historic Kraken data and store in a SQL db
+- [x] Pull historic Kraken data and store in a .cvs files/SQL db
 - [x] Create a trading signal with the historical Kraken data and technical trading indicators
 - [x] Create a trading signal based on a crypto news sentiment analysis
 - [x] Create a Random Forest model to determine the trading signals' weights
@@ -44,8 +43,11 @@ Crypto trading algorithm
 ### Libraries
 * [Data](libs/data)
 * [Signals](libs/signals)
+* [Machine Learning](libs/ml-models)
+* [Backtesting](libs/backtest)
 * [Trading](libs/trading)
 
 ### Resources 
 * [Google Docs](https://docs.google.com/document/d/1GrOYwcoCp7ZqUtgUvB9V7iqvB39htRWjOiBAbJ3R6TM/edit) which houses a lot of useful links
 * [Kraken Python SDK](https://github.com/veox/python3-krakenex)
+* [Presentation](https://docs.google.com/presentation/d/1Kz9JU7hRtkeckNYInshUGnPMhwsbvH0G9_z9Z8SRfOM/edit?ts=6000f74a#slide=id.gb63e9279bc_1_15)
